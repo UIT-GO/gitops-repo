@@ -1,17 +1,17 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: uit-go
+  name: uit-go-core-services
   namespace: argocd
 spec:
   project: default
   source:
     repoURL: https://github.com/UIT-GO/gitops-repo
     targetRevision: main
-    path: base
+    path: core-services
   destination:
     server: https://kubernetes.default.svc
-    namespace: uit-go
+    namespace: core-services
   syncPolicy:
     automated:
       prune: true

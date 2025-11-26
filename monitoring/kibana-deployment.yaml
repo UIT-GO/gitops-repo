@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: kibana
-  namespace: uit-go
+  namespace: monitoring
 spec:
   replicas: 1
   selector:
@@ -25,22 +25,23 @@ spec:
               value: "false"
           resources:
             requests:
-              memory: "256Mi"
+              memory: "512Mi"
               cpu: "250m"
             limits:
-              memory: "512Mi"
+              memory: "1Gi"
               cpu: "500m"
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: kibana
-  namespace: uit-go
+  namespace: monitoring
 spec:
   type: ClusterIP
   selector:
     app: kibana
   ports:
-    - port: 5601
+    - name: http
+      port: 5601
       targetPort: 5601
       protocol: TCP

@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: databases
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: uit-go-secrets
+  namespace: databases
+type: Opaque
+data:
+  POSTGRES_DB: YXV0aF9zZXJ2aWNlX2Ri
+  POSTGRES_USER: YWRtaW4=
+  POSTGRES_PASSWORD: cGFzc3dvcmQ=

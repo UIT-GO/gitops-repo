@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: redisinsight
-  namespace: uit-go
+  namespace: databases
 spec:
   replicas: 1
   selector:
@@ -30,13 +30,14 @@ apiVersion: v1
 kind: Service
 metadata:
   name: redisinsight
-  namespace: uit-go
+  namespace: databases
 spec:
   type: ClusterIP
   selector:
     app: redisinsight
   ports:
-    - port: 5540
+    - name: http
+      port: 5540
       targetPort: 5540
       protocol: TCP
 ---
@@ -44,7 +45,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: redisinsight-pvc
-  namespace: uit-go
+  namespace: databases
 spec:
   accessModes:
     - ReadWriteOnce

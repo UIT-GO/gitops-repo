@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: zookeeper
-  namespace: uit-go
+  namespace: messaging
 spec:
   replicas: 1
   selector:
@@ -40,13 +40,14 @@ apiVersion: v1
 kind: Service
 metadata:
   name: zookeeper
-  namespace: uit-go
+  namespace: messaging
 spec:
   type: ClusterIP
   selector:
     app: zookeeper
   ports:
-    - port: 2181
+    - name: client
+      port: 2181
       targetPort: 2181
       protocol: TCP
 ---
@@ -54,7 +55,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: zookeeper-data-pvc
-  namespace: uit-go
+  namespace: messaging
 spec:
   accessModes:
     - ReadWriteOnce
@@ -66,7 +67,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: zookeeper-log-pvc
-  namespace: uit-go
+  namespace: messaging
 spec:
   accessModes:
     - ReadWriteOnce

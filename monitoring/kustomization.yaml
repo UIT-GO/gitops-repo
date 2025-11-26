@@ -1,0 +1,5 @@
+resources:
+  - namespace.yaml
+  - elasticsearch-deployment.yaml
+  - kibana-deployment.yaml
+  - logstash-deployment.yaml
