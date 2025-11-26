@@ -58,10 +58,12 @@ spec:
   selector:
     app: kafka
   ports:
-    - port: 9092
+    - name: plaintext
+      port: 9092
       targetPort: 9092
       protocol: TCP
-    - port: 9093
+    - name: plaintext-host
+      port: 9093
       targetPort: 9093
       protocol: TCP
 ---
