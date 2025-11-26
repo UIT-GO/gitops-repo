@@ -18,16 +18,15 @@ spec:
           image: confluentinc/cp-kafka:7.5.0
           ports:
             - containerPort: 9092
-            - containerPort: 9093
           env:
             - name: KAFKA_BROKER_ID
               value: "1"
             - name: KAFKA_ZOOKEEPER_CONNECT
-              value: zookeeper.messaging.svc.cluster.local:2181
+              value: zookeeper:2181
             - name: KAFKA_ADVERTISED_LISTENERS
-              value: PLAINTEXT://kafka.messaging.svc.cluster.local:9092,PLAINTEXT_HOST://kafka.messaging.svc.cluster.local:9093
+              value: PLAINTEXT://kafka:9092
             - name: KAFKA_LISTENER_SECURITY_PROTOCOL_MAP
-              value: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+              value: PLAINTEXT:PLAINTEXT
             - name: KAFKA_INTER_BROKER_LISTENER_NAME
               value: PLAINTEXT
             - name: KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR
@@ -58,13 +57,9 @@ spec:
   selector:
     app: kafka
   ports:
-    - name: plaintext
+    - name: kafka
       port: 9092
       targetPort: 9092
-      protocol: TCP
-    - name: plaintext-host
-      port: 9093
-      targetPort: 9093
       protocol: TCP
 ---
 apiVersion: v1
