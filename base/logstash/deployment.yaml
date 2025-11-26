@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: logstash
+  namespace: uit-go
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: logstash
+  template:
+    metadata:
+      labels:
+        app: logstash
+    spec:
+      containers:
+        - name: logstash
+          image: docker.elastic.co/logstash/logstash:8.11.0
+          ports:
+            - containerPort: 5000
+            - containerPort: 5044
+            - containerPort: 9600
+          env:
+            - name: LS_JAVA_OPTS
+              value: -Xms256m -Xmx256m
+          volumeMounts:
+            - name: logstash-pipeline
+              mountPath: /usr/share/logstash/pipeline/logstash.conf
+              subPath: logstash.conf
+      volumes:
+        - name: logstash-pipeline
+          configMap:
+            name: logstash-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: logstash
+  namespace: uit-go
+spec:
+  type: ClusterIP
+  selector:
+    app: logstash
+  ports:
+    - port: 5000
+      targetPort: 5000
+      protocol: TCP
+    - port: 5044
+      targetPort: 5044
+      protocol: TCP
+    - port: 9600
+      targetPort: 9600
+      protocol: TCP
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: logstash-config
+  namespace: uit-go
+data:
+  logstash.conf: |
+    # TODO: Add your Logstash pipeline configuration here
