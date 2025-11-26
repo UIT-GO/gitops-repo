@@ -20,7 +20,7 @@ spec:
             - containerPort: 3032
           env:
             - name: SPRING_DATA_MONGODB_URI
-              value: mongodb://mongodb.databases.svc.cluster.local:27017/trip-db
+              value: mongodb://admin:password@mongodb.databases.svc.cluster.local:27017/trip-db?authSource=admin
             - name: SPRING_KAFKA_BOOTSTRAP_SERVERS
               value: kafka.messaging.svc.cluster.local:9092
           resources:
