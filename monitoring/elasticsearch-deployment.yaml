@@ -25,7 +25,7 @@ spec:
             - name: xpack.security.enabled
               value: "false"
             - name: ES_JAVA_OPTS
-              value: -Xms2g -Xmx2g
+              value: -Xms1g -Xmx1g
             - name: bootstrap.memory_lock
               value: "true"
           resources:
