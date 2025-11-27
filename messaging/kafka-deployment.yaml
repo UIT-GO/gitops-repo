@@ -39,7 +39,11 @@ spec:
           value: PLAINTEXT://0.0.0.0:9092
         - name: KAFKA_ADVERTISED_LISTENERS
           value: PLAINTEXT://kafka:9092
-        image: wurstmeister/kafka
+        - name: KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR
+          value: "1"
+        - name: KAFKA_AUTO_CREATE_TOPICS_ENABLE
+          value: "true"
+        image: confluentinc/cp-kafka:7.5.0
         imagePullPolicy: IfNotPresent
         name: kafka
         ports:
@@ -51,3 +55,32 @@ spec:
           limits:
             memory: "4Gi"
             cpu: "2"
+        volumeMounts:
+        - name: kafka-data
+          mountPath: /var/lib/kafka/data
+        livenessProbe:
+          tcpSocket:
+            port: 9092
+          initialDelaySeconds: 120
+          periodSeconds: 30
+        readinessProbe:
+          tcpSocket:
+            port: 9092
+          initialDelaySeconds: 60
+          periodSeconds: 10
+      volumes:
+      - name: kafka-data
+        persistentVolumeClaim:
+          claimName: kafka-pvc
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: kafka-pvc
+  namespace: messaging
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
