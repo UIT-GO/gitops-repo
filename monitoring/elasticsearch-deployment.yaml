@@ -25,15 +25,15 @@ spec:
             - name: xpack.security.enabled
               value: "false"
             - name: ES_JAVA_OPTS
-              value: -Xms512m -Xmx512m
+              value: -Xms1g -Xmx1g
             - name: bootstrap.memory_lock
               value: "true"
           resources:
             requests:
-              memory: "1Gi"
+              memory: "2Gi"
               cpu: "500m"
             limits:
-              memory: "2Gi"
+              memory: "3Gi"
               cpu: "1"
           volumeMounts:
             - name: elasticsearch-data
