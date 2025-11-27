@@ -15,13 +15,13 @@ spec:
     spec:
       containers:
         - name: kafka
-          image: apache/kafka:latest
+          image: confluentinc/cp-kafka:7.5.0
           resources:
             requests:
-              memory: "2Gi"
+              memory: "1Gi"
               cpu: "500m"
             limits:
-              memory: "3Gi"
+              memory: "2Gi"
               cpu: "1"
           ports:
             - containerPort: 9092
@@ -38,6 +38,8 @@ spec:
               value: PLAINTEXT:PLAINTEXT
             - name: KAFKA_INTER_BROKER_LISTENER_NAME
               value: PLAINTEXT
+            - name: KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS
+              value: "0"
             - name: KAFKA_CONFLUENT_SUPPORT_METRICS_ENABLE
               value: "false"
             - name: KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR
@@ -53,6 +55,16 @@ spec:
           volumeMounts:
             - name: kafka-data
               mountPath: /var/lib/kafka/data
+          readinessProbe:
+            tcpSocket:
+              port: 9092
+            initialDelaySeconds: 45
+            periodSeconds: 15
+          livenessProbe:
+            tcpSocket:
+              port: 9092
+            initialDelaySeconds: 90
+            periodSeconds: 30
       volumes:
         - name: kafka-data
           persistentVolumeClaim:
