@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: driver-service
-  namespace: uit-go
+  namespace: core-services
 spec:
   replicas: 1
   selector:
@@ -20,11 +20,11 @@ spec:
             - containerPort: 3031
           env:
             - name: SPRING_DATA_MONGODB_URI
-              value: mongodb://mongodb:27017/driver-db
+              value: mongodb://admin:password@mongodb.databases.svc.cluster.local:27017/driver-db?authSource=admin
             - name: SPRING_KAFKA_BOOTSTRAP_SERVERS
-              value: kafka:9092
+              value: kafka.messaging.svc.cluster.local:9092
             - name: SPRING_DATA_REDIS_HOST
-              value: redis
+              value: redis.databases.svc.cluster.local
             - name: SPRING_DATA_REDIS_PORT
               value: "6379"
           resources:
@@ -39,12 +39,13 @@ apiVersion: v1
 kind: Service
 metadata:
   name: driver-service
-  namespace: uit-go
+  namespace: core-services
 spec:
   type: ClusterIP
   selector:
     app: driver-service
   ports:
-    - port: 3031
+    - name: http
+      port: 3031
       targetPort: 3031
       protocol: TCP

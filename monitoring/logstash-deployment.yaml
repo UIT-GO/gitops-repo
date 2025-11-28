@@ -1,0 +1,99 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: logstash
+  namespace: monitoring
+  labels:
+    app: logstash
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: logstash
+  template:
+    metadata:
+      labels:
+        app: logstash
+    spec:
+      containers:
+        - name: logstash
+          image: docker.elastic.co/logstash/logstash:7.12.0
+          ports:
+            - containerPort: 5044
+            - containerPort: 9600
+          env:
+            - name: LS_JAVA_OPTS
+              value: "-Xms512m -Xmx512m"
+          resources:
+            requests:
+              memory: 512Mi
+              cpu: 250m
+            limits:
+              memory: 1Gi
+              cpu: 500m
+          volumeMounts:
+            - name: pipeline-volume
+              mountPath: /usr/share/logstash/pipeline/logstash.conf
+              subPath: logstash.conf
+      volumes:
+        - name: pipeline-volume
+          configMap:
+            name: logstash-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: logstash
+  namespace: monitoring
+spec:
+  type: ClusterIP
+  ports:
+    - name: beats
+      port: 5044
+      targetPort: 5044
+      protocol: TCP
+    - name: metrics
+      port: 9600
+      targetPort: 9600
+      protocol: TCP
+  selector:
+    app: logstash
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: logstash-config
+  namespace: monitoring
+data:
+  logstash.conf: |
+    input {
+      kafka {
+        bootstrap_servers => "kafka.messaging.svc.cluster.local:9092"
+        topics => ["auth-logs", "driver-logs", "trip-logs"]
+        group_id => "logstash-consumer"
+        codec => "json"
+        consumer_threads => 1
+      }
+    }
+
+    filter {
+      if [service_name] {
+        mutate {
+          add_field => { "[@metadata][index_name]" => "%{service_name}-%{+YYYY.MM.dd}" }
+        }
+      } else {
+        mutate {
+          add_field => { "[@metadata][index_name]" => "unknown-service-%{+YYYY.MM.dd}" }
+        }
+      }
+    }
+
+    output {
+      elasticsearch {
+        hosts => ["elasticsearch:9200"]
+        index => "%{[@metadata][index_name]}"
+      }
+      stdout {
+        codec => rubydebug
+      }
+    }

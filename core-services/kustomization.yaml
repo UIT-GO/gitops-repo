@@ -1,0 +1,5 @@
+resources:
+  - namespace.yaml
+  - auth-service-deployment.yaml
+  - driver-service-deployment.yaml
+  - trip-service-deployment.yaml
