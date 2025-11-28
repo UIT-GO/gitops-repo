@@ -31,9 +31,9 @@ spec:
                 secretKeyRef:
                   name: uit-go-secrets
                   key: POSTGRES_PASSWORD
-            - name: SPRING_REDIS_HOST
+            - name: SPRING_DATA_REDIS_HOST
               value: redis.databases.svc.cluster.local
-            - name: SPRING_REDIS_PORT
+            - name: SPRING_DATA_REDIS_PORT
               value: "6379"
           resources:
             requests:
