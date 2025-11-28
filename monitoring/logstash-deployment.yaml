@@ -26,11 +26,11 @@ spec:
               value: "-Xms512m -Xmx512m"
           resources:
             requests:
-              memory: "512Mi"
-              cpu: "250m"
+              memory: 512Mi
+              cpu: 250m
             limits:
-              memory: "1Gi"
-              cpu: "500m"
+              memory: 1Gi
+              cpu: 500m
           volumeMounts:
             - name: pipeline-volume
               mountPath: /usr/share/logstash/pipeline/logstash.conf
@@ -68,19 +68,32 @@ data:
   logstash.conf: |
     input {
       kafka {
-        bootstrap_servers => "kafka.messaging.svc.cluster.local:9092"
-        topics => ["logs"]
-        codec => json
+        bootstrap_servers => "kafka:9092"
+        topics => ["auth-logs", "driver-logs", "trip-logs"]
+        group_id => "logstash-consumer"
+        codec => "json"
+        consumer_threads => 1
       }
     }
-    
+
     filter {
-      # Add your filters here
+      if [service_name] {
+        mutate {
+          add_field => { "[@metadata][index_name]" => "%{service_name}-%{+YYYY.MM.dd}" }
+        }
+      } else {
+        mutate {
+          add_field => { "[@metadata][index_name]" => "unknown-service-%{+YYYY.MM.dd}" }
+        }
+      }
     }
-    
+
     output {
       elasticsearch {
         hosts => ["elasticsearch:9200"]
-        index => "logs-%{+YYYY.MM.dd}"
+        index => "%{[@metadata][index_name]}"
+      }
+      stdout {
+        codec => rubydebug
       }
     }
