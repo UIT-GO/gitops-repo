@@ -68,7 +68,7 @@ data:
   logstash.conf: |
     input {
       kafka {
-        bootstrap_servers => "kafka:9092"
+        bootstrap_servers => "kafka.messaging.svc.cluster.local:9092"
         topics => ["auth-logs", "driver-logs", "trip-logs"]
         group_id => "logstash-consumer"
         codec => "json"
