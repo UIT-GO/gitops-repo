@@ -23,6 +23,10 @@ spec:
               value: mongodb://admin:password@mongodb.databases.svc.cluster.local:27017/trip-db?authSource=admin
             - name: SPRING_KAFKA_BOOTSTRAP_SERVERS
               value: kafka.messaging.svc.cluster.local:9092
+            - name: SPRING_DATA_REDIS_HOST
+              value: redis.databases.svc.cluster.local
+            - name: SPRING_DATA_REDIS_PORT
+              value: "6379"
           resources:
             requests:
               memory: "256Mi"
